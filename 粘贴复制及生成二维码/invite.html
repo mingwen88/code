@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>TOP数字链</title>
+    <link href="/static/index/css/ionic.css" rel="stylesheet">
+    <link href="/static/index/css/style.css" rel="stylesheet">
+    <link rel="shortcut icon" type="image/ico" href="img/favicon.ico">
+    <link href="/static/index/css/xinzeng.css" rel="stylesheet">
+    <!--<ion-tab href="#/tab/qoute" class="iconfont icon&#45;&#45;6 tabnone"></ion-tab>-->
+
+    <!--<ion-tab href="#/tab/history/0" class="iconfont icon&#45;&#45;7 tabnone"></ion-tab>-->
+
+    <!--<ion-tab href="#/tab/profile" class="iconfont icon&#45;&#45;8 tabnone"></ion-tab>-->
+    <!-- <script src="/static/index/js/jquery-3.2.1.min.js"></script> -->
+    <script src="/static/index/js/jquery-1.9.1.min.js"></script>
+    <script src="/static/index/js/qrcode.min.js"></script>
+    <style>
+        .header{
+            width: 100%;
+            height: 40px;
+            background: #333333;
+        }
+        .header-top{
+            width: 90%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: #fff;
+            font-size:1rem;
+            padding: 0.5rem 0;
+        }
+        .header-top img{
+            width: 0.5rem;
+        }
+        /*二维码*/
+        .qrcode{
+            /*width: 90%;*/
+            /*margin: 0 auto;*/
+            margin-top: 1rem;
+        }
+        #qrcode{
+            width: 60%;
+            margin: 0 auto;
+        }
+        #qrcode img{
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <section>
+        <div class="header">
+            <div class="header-top">
+                <a href="javascript:history.go(-1)">
+                    <div>
+                        <img src="/static/index/img/back.png" alt="">
+                    </div>
+                </a>
+                <span>邀请好友</span>
+                <span></span>
+            </div>
+        </div>
+        <div class="qrcode">
+            <div id="qrcode"></div>
+        </div>
+    </section>
+</div>
+</body>
+</html>
+<script>
+    window.onload = function () {
+        var id = '{$uid}'
+        var QRCodeStr = 'http://' + window.location.host + '/index/login/register.html?fid='+id;
+        // var QRCodeStr = 'www.baidu.com';
+        qrcode1.makeCode(QRCodeStr);
+    }
+    qrcode1 = new QRCode(document.getElementById("qrcode"), {
+        width: 200, //生成的二维码的宽度
+        height: 200, //生成的二维码的高度
+        colorDark : "#000000", // 生成的二维码的深色部分
+        colorLight : "#ffffff", //生成二维码的浅色部分
+    });
+</script>
