@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>资讯</title>
+    <link rel="stylesheet" href="./css/zixun.css">
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="layer/layer.js"></script>
+    <script src="js/rem.js"></script>
+</head>
+<body>
+<div class="zixun_container">
+    <header id="header">
+        <div>美林资讯</div>
+    </header>
+    <main>
+        <div id="zixun_content">
+            <!--<img src="http://www.qkljw.com/Uploads/Picture/2019-08-07/5d4a2b008c227.png" alt="">-->
+        </div>
+        <div class="isLoading" style="font-size: 0.2rem;text-align: center;display: none">正在加载...</div>
+        <div class="noMore" style="font-size: 0.2rem;text-align: center;display: none">没有更多了~</div>
+    </main>
+</div>
+</body>
+</html>
+<script>
+    var page = 1;
+    var html = '';
+    var dataList = [];
+    var dataList2 = [];
+    var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    // 地址栏取值
+    function getparent(){
+        var name,value,url;
+        var str1=location.href; //取得整个地址栏
+        var num=str1.indexOf("?")
+        url=str1.substr(num+1); //取得所有参数   stringvar.substr(start [,length ]
+        var params = url.split('&');
+        var returnParam = {};
+        params.forEach(function(param) {
+            var paramSplit = param.split('=');
+            returnParam[paramSplit[0]] = paramSplit[1];
+        });
+        return returnParam;
+    }
+    // 获取手机状态栏高度
+    $(function(){
+        // console.log(window.location.protocol + "//" + window.location.host + '/' + 'zixunDetail.html?id=')
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        // alert('是否是Android：'+isAndroid);
+        // alert('是否是iOS：'+isiOS);
+        if(isAndroid){
+            var statusHeight = window.android.returnStatusBarHeight()
+            console.log(statusHeight);
+            var sHeight = statusHeight + 'px'
+            $('#header').css('padding-top','sHeight')
+        }else if (isiOS){
+            // var statusHeight = window.webkit.messageHandlers.getUserInfo.postMessage(null);
+            // console.log(statusHeight);
+            // var sHeight = statusHeight + 'px'
+            var sHeight = getparent().height
+            // var sHeight = 22
+            $('#header').css('padding-top','sHeight')
+            $('.zixun_container #zixun_content').css('margin-top',(65 + sHeight/2) + 'px')
+            // console.log($('.zixun_container #zixun_content').css('margin-top'));
+        }
+
+    });
+
+    if (localStorage.height){
+        // console.log(localStorage.height);
+        scrollTop = localStorage.height
+        console.log(scrollTop);
+    }
+    // 监听滚动条
+    window.onscroll = function(){
+        // scrollTop 滚动条滚动时，距离顶部的距离
+         scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        // windowHeight 可视区的高度
+        var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        // scrollHeight 滚动条的总高度
+        var scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+        // 滚动条到底部的条件
+        if(scrollTop + windowHeight == scrollHeight){
+            $('.isLoading').css('display','block')
+            // 加载数据
+            setTimeout(function () {
+                loadMore();
+            },1000)
+        }
+    }
+    // 资讯请求数据
+    $.ajax({
+        url:'http://39.100.35.87/python/meilin/page=' + page,
+        type:'get',
+        dataType:'json',
+        success:function (data) {
+            console.log(data,'9090');
+            if (data != ''){
+                dataList = data
+                for (let i = 0; i< data.length; i ++){
+                    // console.log(data[i].src.slice(44));
+                    // var src = data[i].src.slice(44)
+                    if (data[i].src == null){
+                        html+= '<div class="cont" onclick="jumpTo('+data[i].id+')"><h3>'+data[i].title+'</h3><p>'+data[i].time+'</p></div>'
+                    } else{
+                        html+= '<div class="cont" onclick="jumpTo('+data[i].id+')"><h3>'+data[i].title+'</h3><div class="Img"><img src="'+data[i].src+'" alt="" class="picImg"></div><p>'+data[i].time+'</p></div>'
+                    }
+                }
+                var div = document.getElementById('zixun_content')
+                // console.log(html);
+                div.innerHTML= html
+            }
+        },
+        error:function (err) {
+            console.log(err);
+        },
+        complete:function (data) {
+            // console.log(data);
+            // var div = document.getElementsByClassName('zixun_content')
+            // console.log(div);
+            // div.innerHTML= html
+
+        }
+    })
+    // 加载更多
+    function loadMore() {
+        page +=1
+        $.ajax({
+            url:'http://39.100.35.87/python/meilin/page=' + page,
+            type:'get',
+            dataType:'json',
+            success:function (data) {
+                console.log(data,'0000');
+                dataList1 = data
+                if (data.length != 0) {
+                    $('.isLoading').css('display','none')
+                    var html1 = ''
+                    var res = dataList.concat(dataList1)
+                    dataList = dataList.concat(dataList1)
+                    console.log(res,'888888');
+                    // console.log(html1,'8989');
+                    for (let i = 0; i< res.length; i ++){
+                        // console.log(data[i].src.slice(44));
+                        // var src = data[i].src.slice(44)
+                        if (res[i].src == null){
+                            html1+= '<div class="cont" onclick="jumpTo('+res[i].id+')"><h3>'+res[i].title+'</h3><p>'+res[i].time+'</p></div>'
+                        } else{
+                            html1+= '<div class="cont" onclick="jumpTo('+res[i].id+')"><h3>'+res[i].title+'</h3><div class="Img"><img src="'+res[i].src+'" alt="" class="picImg"></div><p>'+res[i].time+'</p></div>'
+                        }
+                    }
+                    var div = document.getElementById('zixun_content')
+                    // console.log(html1,'7878');
+                    div.innerHTML= html1
+                }else{
+                    $('.isLoading').css('display','none')
+                    $('.noMore').css('display','block')
+                }
+            },
+            error:function (err) {
+                console.log(err);
+            },
+            complete:function (data) {
+
+            }
+        })
+    }
+    // 跳转详情
+    function jumpTo(value) {
+        // console.log(value);
+        var u = navigator.userAgent, app = navigator.appVersion;
+        var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+        var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+        // alert('是否是Android：'+isAndroid);
+        // alert('是否是iOS：'+isiOS);
+        if(isAndroid){
+            window.android.startWebActivity(window.location.protocol + "//" + window.location.host + '/' + 'zixunDetail.html?id=' + value)
+
+        }else if (isiOS){
+            // window.webkit.messageHandlers.getUserInfo.postMessage('zixunDetail.html?id=' + value);
+            window.location.href = 'zixunDetail.html?id=' + value + '&height=' + getparent().height
+        }
+
+        // localStorage.setItem('height',scrollTop)
+    }
+
+</script>
